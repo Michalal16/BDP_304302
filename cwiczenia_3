@@ -1,0 +1,19 @@
+zad 1,2,3
+
+zad 4.
+SELECT COUNT(*) FROM (SELECT COUNT(popp.gid) FROM popp, majrivers WHERE popp.f_codedesc LIKE 'Building' GROUP BY popp.gid HAVING MIN(ST_Distance(majrivers.geom, popp.geom))<100000) as count_buildings;
+
+CREATE TABLE tableB AS SELECT popp.*FROM popp, majrivers WHERE popp.f_codedesc LIKE 'Building' GROUP BY popp.gid HAVING MIN(ST_Distance(majrivers.geom, popp.geom))<100000;
+
+zad 5. 
+CREATE TABLE airportsNew AS SELECT name, geom, elev FROM airports;
+a:
+  SELECT MAX(ST_Y(geom)), MIN(ST_Y(geom)) FROM airportsNew; 
+b:
+  INSERT INTO airportsNew VALUES ('airportB', ST_CENTROID(ST_MakeLine((SELECT geom FROM airportsNew WHERE ST_Y(geom)=(SELECT MIN(ST_Y(geom)) FROM airportsNew)), (SELECT geom FROM airportsNew WHERE ST_Y(geom)=(SELECT MAX(ST_Y(geom)) FROM airportsNew)))), 213.7);
+
+zad 6.
+SELECT ST_Area(counter) FROM (SELECT ST_Buffer(ST_ShortestLine((SELECT geom FROM lakes WHERE names='Iliamna Lake'),(SELECT geom FROM airports WHERE name='AMBLER')), 1000) AS counter) AS helper;
+
+zad 7.
+SELECT tree.vegdesc, sum(tree.sum) FROM (SELECT vegdesc, SUM(trees.area_km2) FROM trees JOIN tundra ON ST_Contains(tundra.geom, trees.geom) GROUP BY vegdesc UNION ALL SELECT vegdesc, SUM(trees.area_km2) FROM trees JOIN swamp ON ST_Contains(swamp.geom, trees.geom) GROUP BY vegdesc) AS tree GROUP BY tree.vegdesc;
